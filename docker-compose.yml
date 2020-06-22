@@ -1,0 +1,200 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:4
+    volumes:
+    - mongo_data:/data/db:rw
+    tmpfs:
+      - /tmp
+    networks:
+      - graylog
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.5
+    volumes:
+    - elasticsearch_data:/usr/share/elasticsearch/data:rw
+    tmpfs:
+      - /tmp
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=debug:stderr:utctime"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - graylog
+  graylog:
+    image: graylog/graylog:3.3
+    labels:
+      - "traefik.http.routers.logs.rule=Host(`logs.unicon.local`)"
+      - "traefik.http.services.logs.loadbalancer.server.port=9000"
+      - "traefik.http.routers.logs.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+    volumes:
+    - graylog_data:/usr/share/graylog/data/journal:rw
+    tmpfs:
+      - /tmp
+    environment:
+      - GRAYLOG_PASSWORD_SECRET=asdpufoiausdpfoauispdfouoasduif
+      # Password: letmein7
+      - GRAYLOG_ROOT_PASSWORD_SHA2=b099dd7b1840b66cd323fb632e447e51559a14206c4aaba306f74031cf47a40a
+      - GRAYLOG_HTTP_EXTERNAL_URI=https://logs.unicon.local/
+      # - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+    networks:
+      - graylog
+      - reverse-proxy
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+    - 1514:1514
+    - 1514:1514/udp
+    - 12201:12201
+    - 12201:12201/udp
+  reverse-proxy:
+    image: library/traefik:v2.2
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web-secure.address=:443"
+      - "--providers.file.directory=/configuration/"
+      - "--providers.file.watch=true"
+    networks:
+      - reverse-proxy
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+      - "8443:8443"
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./reverse-proxy/:/configuration/
+    - ./reverse-proxy/certs/:/certs/
+  directory:
+    build: ./directory
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: udp://localhost:12201
+    networks:
+      - idp
+      - grouper
+    ports:
+    - 389:389
+    volumes:
+    - directory_data:/var/lib/ldap
+    - directory_config:/etc/ldap/slapd.d
+    environment:
+      LDAP_BASE_DN: "dc=unicon,dc=local"
+      LDAP_DOMAIN: "unicon.local"
+      HOSTNAME: "directory"
+      LDAP_TLS_VERIVY_CLIENT: "try"
+  shibboleth-idp:
+    build: ./shibboleth-idp
+    labels:
+      - "traefik.http.routers.idp.rule=Host(`idp.unicon.local`)"
+      - "traefik.http.services.idp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.idp.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: udp://localhost:12201
+    depends_on:
+      # - graylog
+      - directory
+    networks:
+      - graylog
+      - idp
+      - reverse-proxy
+    healthcheck:
+      disable: true
+  database:
+    image: postgres:12.3
+    command: postgres -N 500
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: udp://localhost:12201
+    networks:
+      - grouper
+    ports:
+    - "5432:5432"
+    volumes:
+    - ./database/initdb.d/:/docker-entrypoint-initdb.d/
+    - ./database/data/:/tmp/pdata/
+    - database_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=supersecret
+  grouper-ui:
+    build: ./grouper
+    command: ui
+    labels:
+      - "traefik.http.routers.grouperui.rule=Host(`grouper-ui.unicon.local`)"
+      - "traefik.http.services.grouperui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.grouperui.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: udp://localhost:12201
+    depends_on:
+      - database
+      - directory
+    networks:
+      - graylog
+      - grouper
+      - reverse-proxy
+    volumes:
+      - ./grouper/src/main/docker/slashRoot/opt/grouper/grouperWebapp/WEB-INF/classes/log4j.properties.sample:/opt/grouper/grouperWebapp/WEB-INF/classes/log4j.properties
+      - ./grouper/src/main/docker/slashRoot/opt/grouper/grouperWebapp/WEB-INF/classes/grouper.hibernate.properties.sample:/opt/grouper/grouperWebapp/WEB-INF/classes/grouper.hibernate.properties
+    environment:
+      GROUPER_DATABASE_URL: "jdbc:postgresql://database/grouper"
+      GROUPER_DATABASE_USERNAME: "grouper"
+      GROUPER_DATABASE_PASSWORD: "grouper"
+      GROUPER_MORPHSTRING_ENCRYPT_KEY: "THISISSUPERSECRET!"
+      GROUPER_AUTO_DDL_UPTOVERSION: "v2.5.*"
+      GROUPER_RUN_TOMCAT_NOT_SUPERVISOR: "true"
+      GROUPER_UI_CONFIGURATION_EDITOR_SOURCEIPADDRESSES: "0.0.0.0/0"
+      GROUPER_UI_GROUPER_AUTH: "true"
+      GROUPERSYSTEM_QUICKSTART_PASS: "letmein7"
+      RUN_SHIB_SP: "false"
+  grouper-daemon:
+    build: ./grouper
+    command: daemon
+    depends_on:
+      - database
+      - directory
+    networks:
+      - graylog
+      - grouper
+    environment:
+      GROUPER_DATABASE_URL: "jdbc:postgresql://database/grouper"
+      GROUPER_DATABASE_USERNAME: "grouper"
+      GROUPER_DATABASE_PASSWORD: "grouper"
+      GROUPER_MORPHSTRING_ENCRYPT_KEY: "THISISSUPERSECRET!"
+      GROUPER_AUTO_DDL_UPTOVERSION: "v2.5.*"
+networks:
+  graylog:
+  idp:
+  grouper:
+  reverse-proxy:
+volumes:
+  elasticsearch_data:
+    driver: local
+  mongo_data:
+    driver: local
+  graylog_data:
+    driver: local
+  database_data:
+    driver: local
+  directory_data:
+    driver: local
+  directory_config:
+    driver: local

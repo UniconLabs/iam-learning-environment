@@ -1,0 +1,1 @@
+grouperPasswordConfigOverride_UI_GrouperSystem_pass.elConfig = ${elUtils.processEnvVarOrFile('GROUPERSYSTEM_QUICKSTART_PASS')}

@@ -108,6 +108,7 @@ services:
     depends_on:
       # - graylog
       - directory
+      - reverse-proxy
     networks:
       - graylog
       - idp

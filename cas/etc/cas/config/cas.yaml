@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  ssl.enabled: false
+cas:
+  server:
+    name: https://cas.unicon.local
+    prefix: ${cas.server.name}/cas
+    tomcat:
+      http-proxy:
+        enabled: true
+        secure: true
+        protocol: org.apache.coyote.http11.Http11NioProtocol
+        scheme: https
+logging:
+  config: file:/etc/cas/config/log4j2.xml

@@ -1,0 +1,7 @@
+{
+    "@class" : "org.apereo.cas.services.RegexRegisteredService",
+    "serviceId" : "^https://test-app.unicon.local.*$",
+    "name" : "testapp",
+    "id" : 100,
+    "evaluatioOrder" : 10
+}

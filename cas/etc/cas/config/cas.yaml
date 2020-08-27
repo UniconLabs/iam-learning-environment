@@ -11,5 +11,8 @@ cas:
         secure: true
         protocol: org.apache.coyote.http11.Http11NioProtocol
         scheme: https
+  service-registry:
+    json:
+      location: file:/etc/cas/services
 logging:
   config: file:/etc/cas/config/log4j2.xml

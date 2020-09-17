@@ -236,6 +236,7 @@
         principalCredential="%{idp.attribute.resolver.LDAP.bindDNCredential}"
         useStartTLS="%{idp.attribute.resolver.LDAP.useStartTLS:true}"
         connectTimeout="%{idp.attribute.resolver.LDAP.connectTimeout}"
+        trustFile="%{idp.attribute.resolver.LDAP.trustCertificates}"
         responseTimeout="%{idp.attribute.resolver.LDAP.responseTimeout}">
         <FilterTemplate>
             <![CDATA[

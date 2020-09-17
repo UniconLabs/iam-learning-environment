@@ -83,16 +83,18 @@ services:
     networks:
       - idp
       - grouper
-    ports:
-    - 389:389
+#    ports:
+#    - 389:389
+#    - 636:636
     volumes:
     - directory_data:/var/lib/ldap
     - directory_config:/etc/ldap/slapd.d
+    - ./directory/certs:/container/service/slapd/assets/certs
     environment:
       LDAP_BASE_DN: "dc=unicon,dc=local"
       LDAP_DOMAIN: "unicon.local"
       HOSTNAME: "directory"
-      LDAP_TLS_VERIVY_CLIENT: "try"
+      LDAP_TLS_VERIFY_CLIENT: "try"
   shibboleth-idp:
     build: ./shibboleth-idp
     labels:
@@ -113,6 +115,8 @@ services:
       - graylog
       - idp
       - reverse-proxy
+    volumes:
+    - ./directory/certs/ca.crt:/opt/shibboleth-idp/credentials/ldap-server.crt
     healthcheck:
       disable: true
   database:

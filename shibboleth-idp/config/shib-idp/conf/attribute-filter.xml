@@ -102,11 +102,9 @@
     </AttributeFilterPolicy>
 -->
 
-    <!-- Attribute release for all SPs (global) tagged as 'Research and Scholarship' -->
+    <!-- release some attributes to everyone. this is the R&S bundle -->
     <AttributeFilterPolicy id="releaseRandSAttributeBundle">
-        <PolicyRequirementRule xsi:type="EntityAttributeExactMatch"
-                        attributeName="http://macedir.org/entity-category"
-                        attributeValue="http://refeds.org/category/research-and-scholarship"/>
+        <PolicyRequirementRule xsi:type="ANY" />
         <AttributeRule attributeID="eduPersonPrincipalName">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>

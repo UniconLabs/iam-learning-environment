@@ -117,6 +117,7 @@ services:
       - reverse-proxy
     volumes:
     - ./directory/certs/ca.crt:/opt/shibboleth-idp/credentials/ldap-server.crt
+    - ./shibboleth-idp/metadata/dynamic:/opt/shibboleth-idp/metadata/dynamic
     healthcheck:
       disable: true
   database:
@@ -188,17 +189,18 @@ services:
   test-app:
     build: ./test-app
     depends_on:
-      - shibboleth-idp
       - reverse-proxy
-    networks:
-      - reverse-proxy
-      - idp
     labels:
       - "traefik.http.routers.testapp.rule=Host(`test-app.unicon.local`)"
       - "traefik.http.services.testapp.loadbalancer.server.port=8080"
       - "traefik.http.routers.testapp.tls=true"
       - "traefik.docker.network=learning-env_reverse-proxy"
       - "traefik.enable=true"
+    networks:
+      - reverse-proxy
+      - idp
+    volumes:
+    - ./test-app/etc/test-app:/etc/test-app
   cas:
     build: ./cas
     depends_on:

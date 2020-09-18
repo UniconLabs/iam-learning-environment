@@ -8,9 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class MainController {
-    @GetMapping("/")
+    @GetMapping("/**")
     public String index(HttpServletRequest request, Model model) {
-        request.getRemoteUser();
         model.addAttribute("request", request);
         return "env";
     }

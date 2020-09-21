@@ -64,7 +64,9 @@ services:
       - "--providers.file.directory=/configuration/"
       - "--providers.file.watch=true"
     networks:
-      - reverse-proxy
+      reverse-proxy:
+        aliases:
+          - idp.unicon.local
     ports:
       - "80:80"
       - "8080:8080"
@@ -201,6 +203,7 @@ services:
       - idp
     volumes:
     - ./test-app/etc/test-app:/etc/test-app
+    - ./cacerts:/usr/lib/jvm/zulu11-ca/lib/security/cacerts
   cas:
     build: ./cas
     depends_on:

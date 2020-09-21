@@ -1,6 +1,5 @@
 package net.unicon.iam.example;
 
-import org.checkerframework.checker.units.qual.C;
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.config.Config;
 import org.pac4j.springframework.security.web.CallbackFilter;
@@ -34,6 +33,29 @@ public class WebSecurity {
                     .and()
                     .addFilterBefore(securityFilter, BasicAuthenticationFilter.class)
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+        }
+    }
+
+    @Configuration
+    @Order(2)
+    public static class CAS3WebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+        private final Config pac4jConfig;
+
+        public CAS3WebSecurityConfigurationAdapter(Config pac4jConfig) {
+            this.pac4jConfig = pac4jConfig;
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            final SecurityFilter securityFilter = new SecurityFilter(this.pac4jConfig, "CAS20Client", DefaultAuthorizers.NONE);
+
+            http.antMatcher("/cas20/**")
+                    .authorizeRequests()
+                        .antMatchers("/cas20/**").authenticated()
+                    .and()
+                    .addFilterBefore(securityFilter, BasicAuthenticationFilter.class)
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+
         }
     }
 

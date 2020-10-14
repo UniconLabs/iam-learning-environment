@@ -1,0 +1,16 @@
+pac4j:
+  callbackUrl: https://test-app.unicon.local/callback
+  saml2:
+    keystorePath: file:/etc/test-app/keystore.jks
+    keystorePassword: testme
+    privateKeyPassword: testme
+    identityProviderMetadataPath: file:/etc/test-app/idp.xml
+    identityProviderEntityId: https://idp.unicon.local/idp/shibboleth
+    serviceProviderEntityId: http://test-app.unicon.local
+    serviceProviderMetadataPath: file:/etc/test-app/sp.xml
+  cas20:
+    loginUrl: https://idp.unicon.local/idp/profile/cas/login
+    protocol: CAS20
+server:
+  port: 8080
+  forward-headers-strategy: framework

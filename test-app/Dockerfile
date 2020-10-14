@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk-alpine
+FROM azul/zulu-openjdk-alpine:11-jre-headless
 
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring

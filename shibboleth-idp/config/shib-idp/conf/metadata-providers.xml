@@ -84,6 +84,8 @@
                       indexesRef="shibboleth.CASMetadataIndices" />
     -->
 
+    <MetadataProvider id="local-dynamic" xsi:type="LocalDynamicMetadataProvider" sourceDirectory="%{idp.home}/metadata/dynamic" />
+
      <!-- InCommon Per-Entity Metadata Distribution Service -->
      <MetadataProvider id="incommon" xsi:type="DynamicHTTPMetadataProvider"
                    maxCacheDuration="PT24H" minCacheDuration="PT10M">

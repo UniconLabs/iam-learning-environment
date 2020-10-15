@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  shibboleth-idp:
+    build: ./shibboleth-idp
+    labels:
+      - "traefik.http.routers.idp.rule=Host(`idp.unicon.local`)"
+      - "traefik.http.services.idp.loadbalancer.server.port=8080"
+      - "traefik.http.routers.idp.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+    depends_on:
+      - directory
+      - reverse-proxy
+    networks:
+      - idp
+      - reverse-proxy
+    volumes:
+      - ./directory/certs/ca.crt:/opt/shibboleth-idp/credentials/ldap-server.crt
+    healthcheck:
+      disable: true
+networks:
+  idp:
+  reverse-proxy:

@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  directory:
+    build: ./directory
+    networks:
+      - idp
+      - grouper
+      - reverse-proxy
+    volumes:
+      - directory_data:/var/lib/ldap
+      - directory_config:/etc/ldap/slapd.d
+      - ./directory/certs:/container/service/slapd/assets/certs
+    environment:
+      LDAP_BASE_DN: "dc=unicon,dc=local"
+      LDAP_DOMAIN: "unicon.local"
+      HOSTNAME: "directory"
+      LDAP_TLS_VERIFY_CLIENT: "try"
+networks:
+  idp:
+  grouper:
+  reverse-proxy:
+volumes:
+  directory_data:
+    driver: local
+  directory_config:
+    driver: local

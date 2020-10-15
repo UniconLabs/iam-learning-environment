@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  cas:
+    build: ./cas
+    depends_on:
+      - reverse-proxy
+    networks:
+      - reverse-proxy
+      - idp
+    labels:
+      - "traefik.http.routers.cas.rule=Host(`cas.unicon.local`)"
+      - "traefik.http.services.cas.loadbalancer.server.port=8080"
+      - "traefik.http.routers.cas.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+networks:
+  reverse-proxy:

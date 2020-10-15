@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  grouper-ui:
+    build: ./grouper
+    command: ui
+    labels:
+      - "traefik.http.routers.grouperui.rule=Host(`grouper-ui.unicon.local`)"
+      - "traefik.http.services.grouperui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.grouperui.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+    depends_on:
+      - database
+      - directory
+    networks:
+      - grouper
+      - reverse-proxy
+    volumes:
+      - ./grouper/src/main/docker/slashRoot/opt/grouper/grouperWebapp/WEB-INF/classes/log4j.properties.sample:/opt/grouper/grouperWebapp/WEB-INF/classes/log4j.properties
+      - ./grouper/src/main/docker/slashRoot/opt/grouper/grouperWebapp/WEB-INF/classes/grouper.hibernate.properties.sample:/opt/grouper/grouperWebapp/WEB-INF/classes/grouper.hibernate.properties
+    environment:
+      GROUPER_DATABASE_URL: "jdbc:postgresql://database/grouper"
+      GROUPER_DATABASE_USERNAME: "grouper"
+      GROUPER_DATABASE_PASSWORD: "grouper"
+      GROUPER_MORPHSTRING_ENCRYPT_KEY: "THISISSUPERSECRET!"
+      GROUPER_AUTO_DDL_UPTOVERSION: "v2.5.*"
+      GROUPER_RUN_TOMCAT_NOT_SUPERVISOR: "true"
+      GROUPER_UI_CONFIGURATION_EDITOR_SOURCEIPADDRESSES: "0.0.0.0/0"
+      GROUPER_UI_GROUPER_AUTH: "true"
+      GROUPERSYSTEM_QUICKSTART_PASS: "letmein7"
+      RUN_SHIB_SP: "false"
+networks:
+  grouper:
+  reverse-proxy:

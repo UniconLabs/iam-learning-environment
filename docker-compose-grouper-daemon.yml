@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  grouper-daemon:
+    build: ./grouper
+    command: daemon
+    depends_on:
+      - database
+      - directory
+    networks:
+      - grouper
+    environment:
+      GROUPER_DATABASE_URL: "jdbc:postgresql://database/grouper"
+      GROUPER_DATABASE_USERNAME: "grouper"
+      GROUPER_DATABASE_PASSWORD: "grouper"
+      GROUPER_MORPHSTRING_ENCRYPT_KEY: "THISISSUPERSECRET!"
+      GROUPER_AUTO_DDL_UPTOVERSION: "v2.5.*"
+networks:
+  grouper:

@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:12.3
+    command: postgres -N 500
+    networks:
+      - grouper
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/initdb.d/:/docker-entrypoint-initdb.d/
+      - ./database/data/:/tmp/pdata/
+      - database_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=supersecret
+networks:
+  grouper:
+volumes:
+  database_data:
+    driver: local

@@ -15,3 +15,4 @@ services:
       - "traefik.enable=true"
 networks:
   reverse-proxy:
+  idp:

@@ -217,7 +217,23 @@ services:
       - "traefik.http.routers.cas.tls=true"
       - "traefik.docker.network=learning-env_reverse-proxy"
       - "traefik.enable=true"
-
+  shibboleth-idp-ui:
+    build:
+      context: ./shibboleth-idp-ui
+    command:
+      - "--server.use-forward-headers=true"
+      - "--shibui.default-password={noop}letmein7"
+    networks:
+      - reverse-proxy
+    labels:
+      - "traefik.http.routers.shibui.rule=Host(`shibui.unicon.local`)"
+      - "traefik.http.services.shibui.loadbalancer.server.port=8080"
+      - "traefik.http.routers.shibui.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+    volumes:
+    - saml_dynamic_metadata:/metadata
+    - shibboleth_dynamic_config:/config
 networks:
   graylog:
   idp:
@@ -235,4 +251,8 @@ volumes:
   directory_data:
     driver: local
   directory_config:
+    driver: local
+  saml_dynamic_metadata:
+    driver: local
+  shibboleth_dynamic_config:
     driver: local

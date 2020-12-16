@@ -67,6 +67,7 @@ services:
       reverse-proxy:
         aliases:
           - idp.unicon.local
+          - cas.unicon.local
     ports:
       - "80:80"
       - "8080:8080"
@@ -231,6 +232,8 @@ services:
       - "traefik.http.routers.cas-management.tls=true"
       - "traefik.docker.network=learning-env_reverse-proxy"
       - "traefik.enable=true"
+    volumes:
+      - ./cacerts:/opt/java/openjdk/lib/security/cacerts
 
 networks:
   graylog:

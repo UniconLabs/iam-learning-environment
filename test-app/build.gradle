@@ -20,6 +20,7 @@ dependencies {
     implementation "org.pac4j:spring-security-pac4j:${project.'spring-security-pac4j.version'}"
     implementation "org.pac4j:pac4j-saml-opensamlv3:${project.'pac4j.version'}"
     implementation "org.pac4j:pac4j-cas:${project.'pac4j.version'}"
+    implementation "org.pac4j:pac4j-oidc:${project.'pac4j.version'}"
 }
 
 bootJar {

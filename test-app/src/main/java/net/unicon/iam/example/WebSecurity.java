@@ -60,6 +60,28 @@ public class WebSecurity {
     }
 
     @Configuration
+    @Order(3)
+    public static class OidcWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+        private final Config pac4jConfig;
+
+        public OidcWebSecurityConfigurationAdapter(Config pac4jConfig) {
+            this.pac4jConfig = pac4jConfig;
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            final SecurityFilter securityFilter = new SecurityFilter(this.pac4jConfig, Pac4jConfig.OIDC_CLIENT_NAME, DefaultAuthorizers.NONE);
+
+            http.antMatcher("/oidc/**")
+                    .authorizeRequests()
+                        .antMatchers("/oidc/**").authenticated()
+                    .and()
+                    .addFilterBefore(securityFilter, BasicAuthenticationFilter.class)
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+        }
+    }
+
+    @Configuration
     public static class DefaultWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         private final Config pac4jConfig;
 

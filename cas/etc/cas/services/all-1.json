@@ -1,0 +1,7 @@
+{
+  "@class" : "org.apereo.cas.services.RegexRegisteredService",
+  "serviceId" : ".+",
+  "name" : "all the things",
+  "id" : 1,
+  "evaluationOrder" : 10
+}

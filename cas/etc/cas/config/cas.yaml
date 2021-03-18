@@ -11,5 +11,14 @@ cas:
         secure: true
         protocol: org.apache.coyote.http11.Http11NioProtocol
         scheme: https
+  service-registry.json.location: file://etc/cas/services
+  authn.ldap:
+    - ldap-url: ldap://directory
+      bind-dn: cn=admin,dc=unicon,dc=local
+      bind-credential: admin
+      type: AUTHENTICATED
+      base-dn: dc=unicon,dc=local
+      subtree-search: true
+      search-filter: uid={user}
 logging:
   config: file:/etc/cas/config/log4j2.xml

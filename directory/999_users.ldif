@@ -13,6 +13,17 @@ objectClass: organizationalUnit
 ou: Grouper
 description: Grouper Groups
 
+dn: uid=GrouperSystem,ou=People,dc=unicon,dc=local
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+objectClass: inetOrgPerson
+givenName: Grouper
+uid: GrouperSystem
+sn: System
+cn: Grouper System
+userPassword: password
+
 dn: uid=jsmith,ou=People,dc=unicon,dc=local
 objectClass: organizationalPerson
 objectClass: person

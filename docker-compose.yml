@@ -63,6 +63,7 @@ services:
       - "--entrypoints.web-secure.address=:443"
       - "--providers.file.directory=/configuration/"
       - "--providers.file.watch=true"
+      # - "--log.level=DEBUG"
     networks:
       reverse-proxy:
         aliases:
@@ -279,6 +280,17 @@ services:
       - "traefik.enable=true"
     volumes:
       - ./cacerts:/opt/java/openjdk/lib/security/cacerts
+  mq:
+    image: rabbitmq:3.8-management-alpine
+    labels:
+      - "traefik.http.routers.mq.rule=Host(`mq.unicon.local`)"
+      - "traefik.http.routers.mq.tls=true"
+      - "traefik.http.services.mq.loadbalancer.server.port=15672"
+      - "traefik.enable=true"
+    networks:
+      - reverse-proxy
+    volumes:
+    - mq_data:/var/lib/rabbitmq
 
 networks:
   graylog:
@@ -299,6 +311,8 @@ volumes:
   directory_config:
     driver: local
   midpoint_home:
+    driver: local
+  mq_data:
     driver: local
 secrets:
   # midPoint

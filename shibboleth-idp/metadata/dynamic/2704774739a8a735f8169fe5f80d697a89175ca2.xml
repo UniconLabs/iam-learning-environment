@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_0b553d88d7ae40258e657d691974b8d701834cc" entityID="https://grouper-ui.unicon.local/grouper">
+    <md:Extensions xmlns:alg="urn:oasis:names:tc:SAML:metadata:algsupport">
+        <mdattr:EntityAttributes xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                                 xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute">
+            <saml:Attribute Name="http://shibboleth.net/ns/profiles/encryptAssertions"
+                            NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue>false</saml:AttributeValue>
+            </saml:Attribute>
+            <saml:Attribute Name="http://shibboleth.net/ns/profiles/encryptNameIDs"
+                            NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml:AttributeValue>false</saml:AttributeValue>
+            </saml:Attribute>
+        </mdattr:EntityAttributes>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha384"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha512"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2000/09/xmldsig#dsa-sha1"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-sha256"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-sha384"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#hmac-sha512"/>
+        <alg:SigningMethod Algorithm="http://www.w3.org/2000/09/xmldsig#hmac-sha1"/>
+        <alg:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+        <alg:DigestMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#sha384"/>
+        <alg:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+    </md:Extensions>
+    <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.0:protocol urn:oasis:names:tc:SAML:1.1:protocol">
+        <md:Extensions xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init">
+            <init:RequestInitiator Binding="urn:oasis:names:tc:SAML:profiles:SSO:request-init" Location="https://grouper-ui.unicon.local/grouper/callback?client_name=client"/>
+        </md:Extensions>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://grouper-ui.unicon.local/grouper/callback?client_name=client&amp;logoutendpoint=true"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://grouper-ui.unicon.local/grouper/callback?client_name=client&amp;logoutendpoint=true"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://grouper-ui.unicon.local/grouper/callback?client_name=client&amp;logoutendpoint=true"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://grouper-ui.unicon.local/grouper/callback?client_name=client&amp;logoutendpoint=true"/>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://grouper-ui.unicon.local/grouper/callback?client_name=client" index="0"/>
+    </md:SPSSODescriptor>
+</md:EntityDescriptor>

@@ -150,5 +150,9 @@
         </AttributeRule>
     </AttributeFilterPolicy>
 
+    <AttributeFilterPolicy id="grouperui">
+        <PolicyRequirementRule xsi:type="Requester" value="https://grouper-ui.unicon.local/grouper" />
 
+        <AttributeRule attributeID="uid" permitAny="true" />
+    </AttributeFilterPolicy>
 </AttributeFilterPolicyGroup>

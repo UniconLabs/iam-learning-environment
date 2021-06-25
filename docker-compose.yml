@@ -150,10 +150,10 @@ services:
       - "traefik.http.routers.grouperui.tls=true"
       - "traefik.docker.network=learning-env_reverse-proxy"
       - "traefik.enable=true"
-#    logging:
-#      driver: gelf
-#      options:
-#        gelf-address: udp://localhost:12201
+    #    logging:
+    #      driver: gelf
+    #      options:
+    #        gelf-address: udp://localhost:12201
     depends_on:
       - database
       - directory
@@ -175,6 +175,31 @@ services:
       GROUPER_UI_GROUPER_AUTH: "true"
       GROUPERSYSTEM_QUICKSTART_PASS: "letmein7"
       RUN_SHIB_SP: "false"
+  grouper-ws:
+    build: ./grouper
+    command: ws
+    labels:
+      - "traefik.http.routers.grouperws.rule=Host(`grouper-ws.unicon.local`)"
+      - "traefik.http.services.grouperws.loadbalancer.server.port=8080"
+      - "traefik.http.routers.grouperws.tls=true"
+      - "traefik.docker.network=learning-env_reverse-proxy"
+      - "traefik.enable=true"
+    depends_on:
+      - database
+      - directory
+    networks:
+      - graylog
+      - grouper
+      - reverse-proxy
+    environment:
+      GROUPER_DATABASE_URL: "jdbc:postgresql://database/grouper"
+      GROUPER_DATABASE_USERNAME: "grouper"
+      GROUPER_DATABASE_PASSWORD: "grouper"
+      GROUPER_MORPHSTRING_ENCRYPT_KEY: "THISISSUPERSECRET!"
+      GROUPER_AUTO_DDL_UPTOVERSION: "v2.5.*"
+      GROUPER_RUN_TOMCAT_NOT_SUPERVISOR: "true"
+      RUN_SHIB_SP: "false"
+      GROUPER_WS_GROUPER_AUTH: "true"
   grouper-daemon:
     build: ./grouper
     command: daemon

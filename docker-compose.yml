@@ -218,11 +218,15 @@ services:
       - "traefik.docker.network=learning-env_reverse-proxy"
       - "traefik.enable=true"
   shibboleth-idp-ui:
-    build:
-      context: ./shibboleth-idp-ui
+    image: unicon/shibui:latest
     command:
+      - "/usr/bin/java"
+      - "-jar"
+      - "shibui.war"
       - "--server.use-forward-headers=true"
       - "--shibui.default-password={noop}letmein7"
+#    ports:
+#      - 9080:8080
     networks:
       - reverse-proxy
     labels:
@@ -232,8 +236,8 @@ services:
       - "traefik.docker.network=learning-env_reverse-proxy"
       - "traefik.enable=true"
     volumes:
-    - saml_dynamic_metadata:/metadata
-    - shibboleth_dynamic_config:/config
+      - saml_dynamic_metadata:/metadata
+      - shibboleth_dynamic_config:/config
 networks:
   graylog:
   idp:

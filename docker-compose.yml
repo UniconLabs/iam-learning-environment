@@ -293,7 +293,6 @@ services:
   shibboleth-idp-ui:
     image: unicon/shibui:latest
     command:
-      - "--server.use-forward-headers=true"
       - "--shibui.default-password={noop}letmein7"
 #    ports:
 #      - 9080:8080

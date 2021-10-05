@@ -293,9 +293,6 @@ services:
   shibboleth-idp-ui:
     image: unicon/shibui:latest
     command:
-      - "/usr/bin/java"
-      - "-jar"
-      - "shibui.war"
       - "--server.use-forward-headers=true"
       - "--shibui.default-password={noop}letmein7"
 #    ports:
@@ -358,12 +355,10 @@ volumes:
     driver: local
   directory_config:
     driver: local
-<<<<<<< HEAD
   saml_dynamic_metadata:
     driver: local
   shibboleth_dynamic_config:
     driver: local
-=======
   midpoint_home:
     driver: local
   mq_data:
@@ -378,4 +373,3 @@ secrets:
     file: ./midpoint/secrets/application/keystore_password.txt
   mp_shibboleth_sp_keys.jks:
     file: ./midpoint/secrets/shibboleth/shibboleth_sp_keys.jks
->>>>>>> master

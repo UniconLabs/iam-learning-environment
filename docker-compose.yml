@@ -68,7 +68,6 @@ services:
       reverse-proxy:
         aliases:
           - idp.unicon.local
-          - cas.unicon.local
     ports:
       - "80:80"
       - "8080:8080"
@@ -260,51 +259,6 @@ services:
         target: /etc/pki/tls/certs/cachain.pem
     healthcheck:
       disable: true
-  test-app:
-    build: ./test-app
-    depends_on:
-      - reverse-proxy
-    labels:
-      - "traefik.http.routers.testapp.rule=Host(`test-app.unicon.local`)"
-      - "traefik.http.services.testapp.loadbalancer.server.port=8080"
-      - "traefik.http.routers.testapp.tls=true"
-      - "traefik.docker.network=learning-env_reverse-proxy"
-      - "traefik.enable=true"
-    networks:
-      - reverse-proxy
-      - idp
-    volumes:
-    - ./test-app/etc/test-app:/etc/test-app
-    - ./cacerts:/usr/lib/jvm/zulu11-ca/lib/security/cacerts
-  cas:
-    build: ./cas
-    depends_on:
-      - reverse-proxy
-    networks:
-      - reverse-proxy
-      - idp
-    labels:
-      - "traefik.http.routers.cas.rule=Host(`cas.unicon.local`)"
-      - "traefik.http.services.cas.loadbalancer.server.port=8080"
-      - "traefik.http.routers.cas.tls=true"
-      - "traefik.docker.network=learning-env_reverse-proxy"
-      - "traefik.enable=true"
-  cas-management:
-    build: ./cas-management
-    depends_on:
-      - reverse-proxy
-      - cas
-    networks:
-      - reverse-proxy
-      - idp
-    labels:
-      - "traefik.http.routers.cas-management.rule=Host(`cas-management.unicon.local`)"
-      - "traefik.http.services.cas-management.loadbalancer.server.port=8080"
-      - "traefik.http.routers.cas-management.tls=true"
-      - "traefik.docker.network=learning-env_reverse-proxy"
-      - "traefik.enable=true"
-    volumes:
-      - ./cacerts:/opt/java/openjdk/lib/security/cacerts
   mq:
     image: rabbitmq:3.8-management-alpine
     labels:

@@ -1,4 +1,2 @@
-include 'test-app'
-
 rootProject.name = 'iam-learning-environment'
 

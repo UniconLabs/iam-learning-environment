@@ -1,25 +1,27 @@
-FROM tier/shib-idp:4.0.0_20200518
+FROM amazoncorretto:11 as download
 
-# The build args below can be used at build-time to tell the build process where to find your config files.  This is for a completely burned-in config.
-ARG TOMCFG=config/tomcat
-ARG TOMCERT=credentials/tomcat
-ARG TOMWWWROOT=wwwroot
-ARG SHBCFG=config/shib-idp/conf
-ARG SHBCREDS=credentials/shib-idp
-ARG SHBVIEWS=config/shib-idp/views
-ARG SHBEDWAPP=config/shib-idp/edit-webapp
-ARG SHBMSGS=config/shib-idp/messages
-ARG SHBMD=config/shib-idp/metadata
+ARG TOMCAT_VERSION=9.0.63
 
-# copy in the needed config files
-ADD ${TOMCFG} /usr/local/tomcat/conf
-ADD ${TOMCERT} /opt/certs
-ADD ${TOMWWWROOT} /usr/local/tomcat/webapps/ROOT
-ADD ${SHBCFG} /opt/shibboleth-idp/conf
-ADD ${SHBCREDS} /opt/shibboleth-idp/credentials
-#ADD ${SHBVIEWS} /opt/shibboleth-idp/views
-#ADD ${SHBEDWAPP} /opt/shibboleth-idp/edit-webapp
-#ADD ${SHBMSGS} /opt/shibboleth-idp/messages
-ADD ${SHBMD} /opt/shibboleth-idp/metadata
+COPY keys/TOMCAT_PGP_KEYS /tmp/TOMCAT_PGP_KEYS
 
-EXPOSE 8080
+RUN yum update -y \
+    && yum install -y tar gzip \
+    && gpg --import /tmp/TOMCAT_PGP_KEYS
+
+RUN curl -L https://downloads.apache.org/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz -o apache-tomcat-${TOMCAT_VERSION}.tar.gz \
+    && curl -L https://downloads.apache.org/tomcat/tomcat-9/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz.asc -o apache-tomcat-${TOMCAT_VERSION}.tar.gz.asc \
+    && gpg --verify apache-tomcat-${TOMCAT_VERSION}.tar.gz.asc apache-tomcat-${TOMCAT_VERSION}.tar.gz \
+    && tar -zxvf apache-tomcat-${TOMCAT_VERSION}.tar.gz -C /opt \
+    && rm apache-tomcat-${TOMCAT_VERSION}.tar.gz \
+    && mv /opt/apache-tomcat-${TOMCAT_VERSION}/ /opt/tomcat \
+    && rm -rf /opt/tomcat/webapps/
+
+FROM amazoncorretto:11 as prod
+
+COPY --from=download /opt/tomcat /opt/tomcat/
+COPY image_files/shibboleth/ /opt/shibboleth-idp/
+COPY image_files/tomcat/idp.xml /opt/tomcat/conf/Catalina/localhost/
+
+RUN /opt/shibboleth-idp/bin/build.sh -Didp.noprompt=true -Didp.target.dir=/opt/shibboleth-idp/
+
+ENTRYPOINT ["/opt/tomcat/bin/catalina.sh",  "run"]

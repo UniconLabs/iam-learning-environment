@@ -38,7 +38,7 @@
         <entry key="AccessByAdminUser">
             <bean parent="shibboleth.PredicateAccessControl">
                 <constructor-arg>
-                    <bean parent="shibboleth.Conditions.SubjectName" c:collection="#{{'banderson'}" />
+                    <bean parent="shibboleth.Conditions.SubjectName" c:collection="#{{'banderson'}}" />
                 </constructor-arg>
             </bean>
         </entry>
